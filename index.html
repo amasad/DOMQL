@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="lib/sizzle.js"></script>
+    <script src="browserify.js"></script>
+  </head>
+  <body>
+    <div id="header" class="shit"></div>
+    <div id="container">
+      <ul>
+        <li>fak</li>
+        <li>shit</li>
+      </ul>
+      <span>span</span>
+    </div>
+    <div id="footer" class="shit"></div>
+    <script>
+      console.log(DQL("SELECT SCRIPT,DIV FROM (SELECT * FROM BODY) WHERE CLASS='shit' AND ID <> 'header'"));
+    </script>
+  </body>
+</html>
