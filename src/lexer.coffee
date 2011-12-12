@@ -40,8 +40,8 @@ SYMBOL_TAGS = do ->
 
 exports.Lexer = class Lexer
   
-  token: (type, val) -> 
-    @tokens.push [type, val, @line + 1]
+  token: (type, val) ->
+    @tokens.push [type, val, @line]
   
   error: (type) ->
     throw SyntaxError switch type
@@ -63,7 +63,7 @@ exports.Lexer = class Lexer
 
       if b is 0 then @error 'unrecognized'
       i += b
-    if @tokens[-1...][0][0] isnt 'TERMINATOR' then @tokens.push ['TERMINATOR', ';', @line + 1]
+    if @tokens[-1...][0][0] isnt 'TERMINATOR' then @tokens.push ['TERMINATOR', ';', @line]
     return @tokens
 
   whitespace: ->
