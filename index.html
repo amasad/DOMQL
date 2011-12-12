@@ -83,10 +83,16 @@
           margin-bottom: 9px;
         }
         section {
-          padding-top:50px;
+          padding-top:40px;
+        }
+        #about {
+          padding-top:5px;
         }
         .trademark{
           color:red;
+        }
+        li{
+          color: black;
         }
       </style>
 
@@ -102,11 +108,11 @@
       <div class="topbar">
         <div class="fill">
           <div class="container">
-            <a class="brand" href="#">DQL</a>
+            <a class="brand" href="#">DOMQL</a>
             <ul class="nav">
               <li class="active"><a href="#about">About</a></li>
               <li><a href="#feel">Feel Right At Home&#8482;</a></li>
-              <li><a href="#todo">Todo App</a></li>
+              <li><a href="#todo">TODO App</a></li>
               <li><a href="#docs">Documentation</a></li>
               <li><a href="#contact">Contact</a></li>
             </ul>
@@ -118,7 +124,7 @@
 
         <div class="content">
           <div class="page-header">
-            <h1 class="brand">DQL <small>DOM Query Language: Web development for DBAs</small></h1>
+            <h1 class="brand">DOMQL <small>DOM Query Language: Web development for DBAs</small></h1>
           </div>
           <div class="row">
             <div class="span14">
@@ -127,17 +133,17 @@
                 <div class="span12">
                   <p class="lead">
                   Lately we've come to learn that web development is indeed a basic human right. And it should be accessible to every developer in the industry.
-                  jQuery made web development easier for designers, CoffeeScript for rubyists and pythonistas, Dart for Java devs, ClojureScript for lispers ...etc. But what about DBAs aren't they equally human? Should they be doomed to suffer learning all about JS and the DOM?</p>
+                  jQuery made web development easier for designers, CoffeeScript for Rubyists and Pythonistas, Dart for Java devs, ClojureScript for Lispers etc. But what about DBAs? aren't they equally human? Should they be doomed to suffer learning all about JS and the DOM?</p>
                   <p class="lead">
-                  DQL is here to make web development familiar to DBAs looking for a change in career (or suffering brain-damage). With a goal of making them
+                  DQL is here to make web development familiar to DBAs looking for a change of career (or suffering brain-damage). With a goal of making them
                   <span class="trademark">Feel Right At Home&#8482;</span>.</p>
                   <p class="lead">
                   DQL is not a fully-fledged programming language but a small DSL inspired by SQL aimed at easing DOM manipulation for DBAs.
               
                   Quick examples to make you feel warm and fuzzy (<span class="trademark">Feel Right At Home&#8482;</span>):</p>
-                    <pre><code>SELECT DIV FROM BODY WHERE ID='container'</code></pre>
-                    <pre><code>UPDATE (SELECT H1 FROM (SELECT DIV FROM BODY).ALL) SET CLASS='active' WHERE CLASS='disabled'</code></pre>
-                    <pre><code>DELETE A FROM BODY.ALL WHERE HREF LIKE "google.com" AND ROWNUM BETWEEN 5 AND 10</code></pre>
+                    <pre>SELECT DIV FROM BODY WHERE ID='container'</pre>
+                    <pre>UPDATE (SELECT H1 FROM (SELECT DIV FROM BODY).ALL) SET CLASS='active' WHERE CLASS='disabled'</pre>
+                    <pre>DELETE A FROM BODY.ALL WHERE HREF LIKE "google.com" AND ROWNUM BETWEEN 5 AND 10</pre>
                 </div>
               </section>
               
@@ -151,7 +157,7 @@
 
                   <h3>DQL Injection</h3>
                   <p>
-                  I tried my best to bring the stuff you mostly adore from SQL and I thought that Injections is a must have to make you <span class="trademark">Feel Right At Home&#8482;</span>.<br/>
+                  I tried my best to bring the stuff you most adore from SQL and I thought that Injections are a must have to make you <span class="trademark">Feel Right At Home&#8482;</span>.<br/>
                   Features added/removed to make injections possible:</p>
                   <ol>
                     <li>Insert `--` anywhere in the code to comment out the rest of the query.</li>
@@ -159,11 +165,11 @@
                     <li>Nothing is sanitized.</li>
                   </ol>
                 </div>
-                <code>DQL("SELECT * FROM BODY WHERE CLASS='%s' AND ROWNUM > 2", <input class="large" type="text" value='&#39;DROP BODY;-- pwned! \o/'/><button class="btn danger">Run!</button>)</code>
+                <code>DOMQL("SELECT * FROM BODY WHERE CLASS='%s' AND ROWNUM > 2", <input class="large" type="text" value='&#39;DROP BODY;-- pwned! \o/'/><button class="btn danger">Run!</button>)</code>
               </section>
               
               <section id="todo">
-                <div class="page-header"><h1>Todo App</h1></div>
+                <div class="page-header"><h1>TODO App</h1></div>
                 <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/fe784/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
               </section>
             </div>
