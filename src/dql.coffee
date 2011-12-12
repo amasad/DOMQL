@@ -4,7 +4,7 @@
 
 parser.lexer =
   lex: ->
-    [tag, @yytext] = @tokens[@pos++] or ['']
+    [tag, @yytext, @yylineno] = @tokens[@pos++] or ['']
     tag
   setInput: (@tokens) -> @pos = 0
   upcomingInput: -> ""

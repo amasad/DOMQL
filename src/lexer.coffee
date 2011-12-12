@@ -41,7 +41,7 @@ SYMBOL_TAGS = do ->
 exports.Lexer = class Lexer
   
   token: (type, val) -> 
-    @tokens.push [type, val]
+    @tokens.push [type, val, @line + 1]
   
   error: (type) ->
     throw SyntaxError switch type
@@ -51,6 +51,7 @@ exports.Lexer = class Lexer
   tokenize: (@code) ->
     @tokens = []
     @stackMatch = []
+    @line = 0
     
     i = 0
     while @chunk = @code.slice i
@@ -62,11 +63,13 @@ exports.Lexer = class Lexer
 
       if b is 0 then @error 'unrecognized'
       i += b
-    if @tokens[-1...][0][0] isnt 'TERMINATOR' then @tokens.push ['TERMINATOR', ';']
+    if @tokens[-1...][0][0] isnt 'TERMINATOR' then @tokens.push ['TERMINATOR', ';', @line + 1]
     return @tokens
 
   whitespace: ->
-    return 0 unless match = @chunk.match /^\s+/
+    return 0 unless match = @chunk.match /^[ \n\r]+/
+    newLines = match[0].split(/\n/).length - 1
+    @line += newLines
     return match[0].length
 
   wordMatch: ->
