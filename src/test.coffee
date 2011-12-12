@@ -62,8 +62,6 @@ tests =
     'SELECT LI FROM (SELECT UL FROM BODY) WHERE ROWNUM < 5 AND ROWNUM > 0': 'body > ul > li:lt(5):gt(0)'
     'SELECT LI FROM (SELECT UL FROM BODY) WHERE ROWNUM BETWEEN 0 AND 5': 'body > ul > li:lt(5):gt(0)'
     'SELECT LI FROM (SELECT UL FROM BODY) WHERE ROWNUM IN (1,2,4)': 'body > ul > li:eq(1),body > ul > li:eq(2),body > ul > li:eq(4)'
-    'SELECT COUNT(*) from BODY': (res)-> Sizzle('body > *').length
-    'SELECT COUNT(*) from BODY.ALL': (res) -> Sizzle('body *').length
 
   
   UPDATE:
@@ -104,9 +102,19 @@ tests =
     'CREATE ELEMENT A ( ID  \'fak\' )': (res) ->
       console.log res
   
+  FUNCTIONS:
+    'SELECT COUNT(*) from BODY': (res) -> 
+      assert.strictEqual res, Sizzle('body > *').length
+    'SELECT COUNT(*) from BODY.ALL': (res) -> 
+      assert.strictEqual res, Sizzle('body *').length
+    'SELECT TEXT(DIV) FROM BODY WHERE ID=\'whats-my-text\'': (res) ->
+      assert.strictEqual res, 'my text'
+    'SELECT VAL(INPUT) FROM BODY': (res) ->
+      assert.strictEqual res, 'my value'
+  
   INSERT:
     """
-    INSERT INTO (SELECT DIV FROM BODY WHERE ID=\'parent-div\') 
+    INSERT INTO (SELECT DIV FROM BODY WHERE ID=\'parent-div\')
       VALUES (
         CREATE ELEMENT A (
           CLASS \'added\',
@@ -126,7 +134,9 @@ tests =
           SELECT LI FROM (SELECT OL FROM BODY)
         )""": ->
   
-  DROP: 'DROP ELEMENT DIV': ->
+  DROP: 
+    'DROP ELEMENT DIV': ->
+  
     
     
 helper =
@@ -172,6 +182,7 @@ DOMQL.ready ->
   run 'UPDATE'
   run 'DELETE'
   run 'CREATE'
+  run 'FUNCTIONS'
   run 'INSERT'
   run 'DROP'
   
