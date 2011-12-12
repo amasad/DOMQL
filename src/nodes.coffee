@@ -1,10 +1,24 @@
+{Sizzle} = require './lib/sizzle'
+
 nodes = exports
 evalQuery = (source) ->
   if typeof source is 'string'
-    Sizzle "html > #{source}"
+    Sizzle source
   else
     source.eval()
 
+nodes.QueryList = class Queries
+  constructor: (first) ->
+    @queries = [first]
+    
+  add: (query) ->
+    @queries.push query
+    return @
+  
+  eval: ->
+    # Eval all queries but get the last result.
+    (query.eval() for query in @queries)[-1...][0]
+  
 nodes.Select = class Select
   constructor: (@fields, @source, @isAll) ->
 
@@ -60,7 +74,15 @@ nodes.Insert = class Insert
       for source in sources
         for child in source
           elem.appendChild child
-  
+    targets
+
+nodes.Drop = class Drop
+  constructor: (@target) ->
+    
+  eval: ->
+    target = evalQuery @target
+    elem.parentElement.removeChild elem for elem in target
+    
 nodes.Where = class Where
   constructor: (@expression) ->
 
@@ -99,8 +121,8 @@ nodes.Function = class Function extends Array
     
   exec: (res) ->
     switch @fnName
-      when 'COUNT'
-        res.length
-
+      when 'COUNT' then res.length
+      when 'VAL' then res[0].value
+      when 'TEXT' then res[0].innerText
         
       

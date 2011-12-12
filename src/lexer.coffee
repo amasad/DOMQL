@@ -6,7 +6,7 @@ WORDS =
   KEYWORDS: ['ROWNUM', 'ELEMENT', 'VALUES']
   POSTFIX: ['ALL']
 
-FUNCTION = ['COUNT']
+FUNCTION = ['COUNT', 'TEXT', 'VAL']
 
 SYMBOLS =
   EQ: '='
@@ -17,6 +17,7 @@ SYMBOLS =
   COMMA: ','
   LPAREN: '('
   RPAREN: ')'
+  TERMINATOR: ';'
 
 STRING = /^'[^\\']*(?:\\.[^\\']*)*'/
 NUMBER = /^-?\d+/
@@ -47,12 +48,12 @@ exports.Lexer = class Lexer
       when 'mismatch' then 'MISMATCHED PARENS'
       when 'unrecognized' then 'UNRECOGNIZED TOKEN ' + @chunk.match(/([^\s]*)\b/)[1]
 
-  tokenize: (code) ->
+  tokenize: (@code) ->
     @tokens = []
     @stackMatch = []
     
     i = 0
-    while @chunk = code.slice i
+    while @chunk = @code.slice i
       b = @whitespace() or
           @wordMatch() or
           @identifierMatch() or
@@ -61,7 +62,7 @@ exports.Lexer = class Lexer
 
       if b is 0 then @error 'unrecognized'
       i += b
-    @tokens.push ['TERMINATOR', '\n']
+    if @tokens[-1...][0][0] isnt 'TERMINATOR' then @tokens.push ['TERMINATOR', ';']
     return @tokens
 
   whitespace: ->
@@ -102,6 +103,8 @@ exports.Lexer = class Lexer
     if val in SYMBOL_LIST
       @token SYMBOL_TAGS[val], val
       return 1
+    else if val is '-' and @chunk[1] is '-'
+      return @code.length
     else
       return 0
 

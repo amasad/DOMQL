@@ -42,6 +42,7 @@ assert =
     check expected, actual
   
 require './dql'
+{Sizzle} = require './lib/sizzle'
 
 tests =
   SELECT: 
@@ -124,7 +125,10 @@ tests =
           SELECT UL FROM BODY,
           SELECT LI FROM (SELECT OL FROM BODY)
         )""": ->
-      
+  
+  DROP: 'DROP ELEMENT DIV': ->
+    
+    
 helper =
   start: (type) ->
     console.log '\nTesting %s', type
@@ -144,22 +148,22 @@ run = (type) ->
   for query, fn of tests[type]
     console.log ' '
     try
-      fn DQL query
+      fn DOMQL query
       console.log 'Test Passed: %s', query
     catch e
       helper.catcher e, query
   helper.end type
     
-DQL.ready ->
+DOMQL.ready ->
   helper.start 'SELECT'
   for query, selector of tests.SELECT
     console.log ' '
     try
       if typeof selector is 'string'
-        assert.collectionEqual DQL(query), Sizzle selector
+        assert.collectionEqual DOMQL(query), Sizzle selector
         console.log 'Test Passed: %s', query, Sizzle selector
       else
-        selector DQL query
+        selector DOMQL query
         console.log 'Test Passed: %s', query
     catch e
       helper.catcher e, query
@@ -169,3 +173,5 @@ DQL.ready ->
   run 'DELETE'
   run 'CREATE'
   run 'INSERT'
+  run 'DROP'
+  

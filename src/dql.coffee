@@ -1,5 +1,6 @@
 {Lexer} = require './lexer'
 {parser} = require './parser.js'
+{Sizzle} = require './lib/sizzle'
 
 parser.lexer =
   lex: ->
@@ -11,11 +12,37 @@ parser.lexer =
 parser.yy = require './nodes'
 l = new Lexer
 
-window.DQL = (source) ->
+formatRegExp = /%[sdj%]/g
+format = (f, args) ->
+  i = 0
+  len = args.length
+  String(f).replace formatRegExp, (x) ->
+    return x if i >= len
+    switch x
+      when '%s' then String(args[i++])
+      when '%d' then Number(args[i++])
+      when '%j' then JSON.stringify(args[i++])
+      when '%%' then '%'
+      else return x;
+  
+DOMQL = (source, args...) ->
+  source = format source, args
   tokens = l.tokenize source
   parser.parse(tokens).eval()
 
-window.DQL.ready = do ->
+DOMQL.tmpls = {}
+
+DOMQL.addTmpl = (name, source) ->
+  DOMQL.tmpls[name] = source
+
+DOMQL.tmpl = (name, args...) ->
+  tmpl = DOMQL.tmpls[name]
+  if tmpl?
+    DOMQL tmpl, args...
+  else
+    throw new Error 'Template not found.'
+
+DOMQL.ready = do ->
   fns = []
   f = false
   doc = document
@@ -51,4 +78,15 @@ window.DQL.ready = do ->
       fn()
   else (fn) -> if loaded then fn() else fns.push(fn)
 
+DOMQL.ready ->
+  for tmpl in Sizzle('script[type="text/domql-tmpl"]')
+    DOMQL.addTmpl tmpl.getAttribute('id'), tmpl.innerHTML
+  
+  DOMQL script.innerHTML for script in Sizzle('script[type="text/domql"]')
 
+DOMQL.DELETE = (elem) ->
+  elem.parentElement.removeChild elem
+
+window.DOMQL = DOMQL
+
+  
