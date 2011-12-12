@@ -2,10 +2,118 @@
   <html lang="en">
     <head>
       <link rel="stylesheet" href="bootstrap.css">
-      <script src="lib/sizzle.js"></script>
-      <script src="built.js"></script>
+      <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+      <script>
+      /* =============================================================
+       * bootstrap-scrollspy.js v1.4.0
+       * http://twitter.github.com/bootstrap/javascript.html#scrollspy
+       * =============================================================
+       * Copyright 2011 Twitter, Inc.
+       *
+       * Licensed under the Apache License, Version 2.0 (the "License");
+       * you may not use this file except in compliance with the License.
+       * You may obtain a copy of the License at
+       *
+       * http://www.apache.org/licenses/LICENSE-2.0
+       *
+       * Unless required by applicable law or agreed to in writing, software
+       * distributed under the License is distributed on an "AS IS" BASIS,
+       * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       * See the License for the specific language governing permissions and
+       * limitations under the License.
+       * ============================================================== */
+
+
+      !function ( $ ) {
+
+        "use strict"
+
+        var $window = $(window)
+
+        function ScrollSpy( topbar, selector ) {
+          var processScroll = $.proxy(this.processScroll, this)
+          this.$topbar = $(topbar)
+          this.selector = selector || 'li > a'
+          this.refresh()
+          this.$topbar.delegate(this.selector, 'click', processScroll)
+          $window.scroll(processScroll)
+          this.processScroll()
+        }
+
+        ScrollSpy.prototype = {
+
+            refresh: function () {
+              this.targets = this.$topbar.find(this.selector).map(function () {
+                var href = $(this).attr('href')
+                return /^#\w/.test(href) && $(href).length ? href : null
+              })
+
+              this.offsets = $.map(this.targets, function (id) {
+                return $(id).offset().top
+              })
+            }
+
+          , processScroll: function () {
+              var scrollTop = $window.scrollTop() + 10
+                , offsets = this.offsets
+                , targets = this.targets
+                , activeTarget = this.activeTarget
+                , i
+
+              for (i = offsets.length; i--;) {
+                activeTarget != targets[i]
+                  && scrollTop >= offsets[i]
+                  && (!offsets[i + 1] || scrollTop <= offsets[i + 1])
+                  && this.activateButton( targets[i] )
+              }
+            }
+
+          , activateButton: function (target) {
+              this.activeTarget = target
+
+              this.$topbar
+                .find(this.selector).parent('.active')
+                .removeClass('active')
+
+              this.$topbar
+                .find(this.selector + '[href="' + target + '"]')
+                .parent('li')
+                .addClass('active')
+            }
+
+        }
+
+        /* SCROLLSPY PLUGIN DEFINITION
+         * =========================== */
+
+        $.fn.scrollSpy = function( options ) {
+          var scrollspy = this.data('scrollspy')
+
+          if (!scrollspy) {
+            return this.each(function () {
+              $(this).data('scrollspy', new ScrollSpy( this, options ))
+            })
+          }
+
+          if ( options === true ) {
+            return scrollspy
+          }
+
+          if ( typeof options == 'string' ) {
+            scrollspy[options]()
+          }
+
+          return this
+        }
+
+        $(document).ready(function () {
+          $('body').scrollSpy('[data-scrollspy] li > a')
+        })
+
+      }( window.jQuery || window.ender );
+      </script>
       <meta charset="utf-8">
-      <title>Bootstrap, from Twitter</title>
+      <title>DOMQL</title>
       <meta name="description" content="">
       <meta name="author" content="">
 
@@ -133,7 +241,8 @@
                 <div class="span12">
                   <p class="lead">
                   Lately we've come to learn that web development is indeed a basic human right. And it should be accessible to every developer in the industry.
-                  jQuery made web development easier for designers, CoffeeScript for Rubyists and Pythonistas, Dart for Java devs, ClojureScript for Lispers etc. But what about DBAs? aren't they equally human? Should they be doomed to suffer learning all about JS and the DOM?</p>
+                  jQuery made web development easier for designers, CoffeeScript for Rubyists and Pythonistas, Dart for Java devs, ClojureScript for Lispers etc.</p> 
+                  <p class="lead">But what about DBAs? aren't they equally human? Should they be doomed to suffer learning all about JS and the DOM?</p>
                   <p class="lead">
                   DQL is here to make web development familiar to DBAs looking for a change of career (or suffering brain-damage). With a goal of making them
                   <span class="trademark">Feel Right At Home&#8482;</span>.</p>
@@ -165,18 +274,72 @@
                     <li>Nothing is sanitized.</li>
                   </ol>
                 </div>
-                <code>DOMQL("SELECT * FROM BODY WHERE CLASS='%s' AND ROWNUM > 2", <input class="large" type="text" value='&#39;;DROP BODY;-- pwned! \o/'/><button class="btn danger">Run!</button>)</code>
+                <code>DOMQL("SELECT * FROM BODY WHERE CLASS='%s' AND ROWNUM > 2", "';DROP ELEMENT BODY;-- pwned! \o/")</code>
               </section>
               
               <section id="todo">
                 <div class="page-header"><h1>TODO App</h1></div>
-                <iframe style="width: 100%; height: 300px" src="http://jsfiddle.net/fe784/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+                <iframe style="width: 100%; height: 600px" src="http://jsfiddle.net/VENg2/16/embedded/html,result" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+              </section>
+              
+              <section id="docs">
+                <div class="page-header"><h1>Documentation</h1></div>
+                <h2>Embedded queries.</h2>
+                <p>Just like the TODO app example above you can embed your queries inside a script element with <code>type="text/domql"</code>
+                  and these queries would be run as soon as the page loads. The following would add 2 divs to the body element with ids header and container respectively:</p>
+                <pre>&lt;script type="test/domql"&gt;
+  INSERT INTO BODY VALUES (
+    CREATE ELEMENT DIV (
+      id 'header'
+    ),
+    CREATE ELEMENT DIV (
+      id 'container'
+    )
+  )
+&lt;/script&gt;</pre>
+                <p>Alternatively you could embed queries as templates using <code>text/domql-tmpl</code> script type. You could think of them as stored procedures.
+                  Templates would then be accessible from anywhere in your app using <code>DOMQL.tmpl('tmpl-id')</code>. The function could also be passed
+                  multiple arguments in a <code>printf()</code>-ish way. </p>
+                <pre>&lt;script type="text/domql-tmpl" id="hello-user"&gt;
+  CREATE ELEMENT SPAN (
+    class 'greetings',
+    innerText 'Hello %s'
+  )
+&lt;/script&gt;</pre>
+                <h2>DOMQL from JavaScript</h2>
+                <h3>DOMQL.tmpl()</h3>
+                <p>Executes an embedded query template. <code>DOMQL.tmpl('hello-user', 'Amjad')</code></p>
+                <h3>DOMQL()</h3>
+                <p>To use DOMQL in JavaScript you could you just call the <code>DOMQL()</code> function passing it your query and any number of arguments (just like <code>DOMQL.tmpl</code>).
+                <pre>DOMQL("UPDATE BODY SET style ='background:%s'", "red");</pre>
+                <h3>DOMQL.ready()</h3>
+                <p>Takes a JS function and executes it when the DOM is ready for manipulation.</p>
+                <h2>Queries</h2>
+                <h3>SELECT</h3>
+                  <p><code>SELECT</code> [Optional function ex: <code>COUNT(</code>][html tags separated by a comma] <code>FROM</code> [a single html tag or a Query between parentheses] followed by optional where clause:<br/> <code>WHERE</code> [Expression: HTML Attribute or <code>ROWNUM</code> [Operator: <code>=/&gt;/&lt;/&lt;&gt;/IN/BETWEEN</code> Value(s)]] <code>AND</code>/<code>OR</code> [Other expression]...<p>
+                <h3>UPDATE</h3>
+                  <p><code>UPDATE</code> [a single html tag or a Query between parentheses] <code>SET</code> [single or multiple key = value separated by a comma] followed by an optional where clause.</p>
+                <h3>DELETE</h3>
+                  <p><code>DELETE</code> [html tags separated by commas] <code>FROM</code> [a single html tag or a Query between parentheses] followed by an optional where clause.</p>
+                <h3>INSERT</h3>
+                  <p><code>INSERT INTO</code> [a single html tag or a Query between parentheses] <code>VALUES (</code> [A single Query or multiple queries separated by commas] <code>)</code></p>
+                <h3>CREATE</h3>
+                <p><code>CREATE ELEMENT</code> [a single html tag] <code>(</code> [zero, one or multiple key value separated by commas] <code>)</code></p>
+                <h3>DROP</h3>
+                <p><code>DROP ELEMENT</code> [a single html tag or a Query between parentheses] </p>
+                <h3>UNIONS COMING SOON...</h3>
+              </section>
+              
+              <section id="contact">
+                <div class="page-header"><h1>Contact</h1></div>
+                 <a href="http://twitter.com/amjad_masad">Twitter</a><br/>
+                 <a href="mailto:amjad.masad@gmail.com">Email</a>
               </section>
             </div>
           </div>
         </div>
 
       </div> <!-- /container -->
-
+      <script>$('.topbar').scrollSpy()</script>
     </body>
   </html>
