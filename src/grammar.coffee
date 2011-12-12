@@ -146,6 +146,7 @@ grammar =
   ]
   
   Attributes: [
+    o '',                                                            -> []
     o 'Attribute',                                                   -> [$1]
     o 'Attributes COMMA Attribute',                                  -> $1.push($3); $1
   ]
