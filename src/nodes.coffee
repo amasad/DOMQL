@@ -1,13 +1,15 @@
 nodes = exports
+evalQuery = (source) ->
+  if typeof source is 'string'
+    Sizzle "html > #{source}"
+  else
+    source.eval()
 
 nodes.Select = class Select
   constructor: (@fields, @source, @isAll) ->
 
   eval: ->
-    source = if typeof @source is 'string'
-      Sizzle @source
-    else
-      @source.eval()
+    source = evalQuery @source
     
     prefix = if @isAll then '' else '>'
     
@@ -24,7 +26,7 @@ nodes.Update = class Update
   constructor: (@source, @settings) ->
   
   eval: ->
-    res = @source.eval()
+    res = evalQuery @source
     res = @where.eval res if @where?
     for elem in res
       for setting in @settings
@@ -38,7 +40,7 @@ nodes.Delete = class Delete extends Select
 
 nodes.Create = class Create
   constructor: (@tag, @attrs) ->
-    console.log arguments
+  
   eval: ->
     elem = document.createElement @tag
     for attr in @attrs
@@ -50,14 +52,12 @@ nodes.Create = class Create
 
 nodes.Insert = class Insert
   constructor: (@target, @sources) ->
-    
+  
   eval: ->
-    targets = @target.eval()
+    targets = evalQuery @target
     sources = (query.eval() for query in @sources)
-    console.log @sources
     for elem in targets
       for source in sources
-        console.log source
         for child in source
           elem.appendChild child
   
