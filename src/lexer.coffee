@@ -23,9 +23,13 @@
 ###
 WORDS = 
   COMMAND: ['SELECT', 'DELETE', 'UPDATE', 'INSERT', 'DROP', 'CREATE']
-  OPERATOR: ['FROM', 'INTO', 'WHERE']
-  LOGIC: ['AND', 'OR']
+  OPERATOR: ['FROM', 'INTO', 'WHERE', 'SET']
+  LOGIC: ['AND', 'OR', 'NOT']
   COMPARE: ['LIKE', 'BETWEEN', 'IN']
+  KEYWORDS: ['ROWNUM']
+  POSTFIX: ['ALL']
+
+FUNCTION = ['COUNT']
 
 SYMBOLS =
   EQ: '='
@@ -36,8 +40,6 @@ SYMBOLS =
   COMMA: ','
   LPAREN: '('
   RPAREN: ')'
-
-FUNCTION = ['COUNT']
 
 STRING = /^'[^\\']*(?:\\.[^\\']*)*'/
 NUMBER = /^-?\d+/
@@ -110,7 +112,7 @@ exports.Lexer = class Lexer
   
   literalMatch: ->
     if match = @chunk.match STRING
-      @token 'STRING', match[0]
+      @token 'STRING', match[0].slice(1,-1)
       return match[0].length
     else if match = @chunk.match NUMBER
       @token 'NUMBER', match[0]

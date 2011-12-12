@@ -1,32 +1,43 @@
-exports.Select = class Select
-  constructor: (@fields, @source) ->
+nodes = exports
+
+nodes.Select = class Select
+  constructor: (@fields, @source, @isAll) ->
 
   eval: ->
     source = if typeof @source is 'string'
       Sizzle @source
     else
       @source.eval()
-    console.log source, @fields
-    res = []
-    if source.length is 1
-      Sizzle '>' + field, source[0], res for field in @fields
-    else
-      console.log 'xx', @fields[0], Sizzle.matches @fields[0], source, res
-      for field in @fields
-        res = res.concat Sizzle.matches field, source
-      return res
-    if @where?
-      Sizzle.matches @where.compile(), res
-    else
-      res
-
-exports.Where = class Where
-  constructor: (@expression) ->
     
-  compile: ->
-    @expression
+    prefix = if @isAll then '' else '>'
+    
+    res = []
+    for elem in source
+      Sizzle prefix + field, elem, res for field in @fields
+          
+    res = @where.eval res if @where?
+    
+    return @fields.exec res if @fields instanceof nodes.Function
+    res
 
-exports.AttrOper = class AttrOper
+nodes.Update = class Update
+  constructor: (@source, @settings) ->
+  
+  eval: ->
+    res = @source.eval()
+    res = @where.eval res if @where?
+    for elem in res
+      for setting in @settings
+        elem.setAttribute setting[0], setting[1]
+    return res
+    
+nodes.Where = class Where
+  constructor: (@expression) ->
+
+  eval: (res) ->
+    Sizzle.matches @expression, res
+
+nodes.AttrOper = class AttrOper
   constructor: (@op1, [@oper, @op2]) ->
   
   compile: ->
@@ -38,3 +49,28 @@ exports.AttrOper = class AttrOper
         ("[#{@op1}=#{op}]" for op in @op2).join ','
       
   toString: -> @compile()
+  
+nodes.NumOper = class NumOper
+  constructor: ([@oper, @op1, @op2]) ->
+  
+  compile: ->
+    switch @oper
+      when '>' then ":gt(#{@op1})"
+      when '<' then ":lt(#{@op1})"
+      when '=' then ":eq(#{@op1})"
+      when 'BETWEEN' then ":lt(#{@op2}):gt(#{@op1})"
+      when 'IN'
+        (":eq(#{op})" for op in @op1).join ','
+
+nodes.Function = class Function extends Array
+  constructor: (@fnName, @fields) ->
+    @push v for v in @fields
+    @length = @fields.length
+    
+  exec: (res) ->
+    switch @fnName
+      when 'COUNT'
+        res.length
+
+        
+      

@@ -21,6 +21,7 @@ grammar =
   
   Query: [
     o 'SelectQuery'
+    o 'UpdateQuery'
     # o 'InsertQuery'
     # o 'CreateQuery'
     # o 'DropQuery'
@@ -32,8 +33,20 @@ grammar =
     o 'Select Where',                                      -> $1.where = $2; $1
   ]
   
+  UpdateQuery: [
+    o 'Update'
+    o 'Update Where',                         -> $1.where = $2; $1
+  ]
+  
   Select: [
-    o 'SELECT Fields FROM Table',                          -> new Select $2, $4
+    o 'SELECT Fields FROM Table',                          -> new Select $2, $4, false
+    o 'SELECT Fields FROM Table DOT ALL',                  -> new Select $2, $4, true
+    o 'SELECT FunctionCall FROM Table',                    -> new Select $2, $4, false
+    o 'SELECT FunctionCall FROM Table DOT ALL',            -> new Select $2, $4, true
+  ]
+  
+  FunctionCall: [
+    o 'FUNCTION LPAREN Fields RPAREN',                     -> new Function $1, $3
   ]
   
   Fields: [
@@ -46,9 +59,22 @@ grammar =
     o 'STAR'
   ]
   
+  Update: [
+    o 'UPDATE Table SET Settings',                         -> new Update $2, $4
+  ]
+  
+  Settings: [
+    o 'Setting',                                            -> [$1]
+    o 'Settings COMMA Setting',                             -> $1.push($3); $1
+  ]
+  
+  Setting: [
+    o 'IDENTIFIER EQ Value',                                -> [$1, $3]
+  ]
+  
   Table: [
     o 'IDENTIFIER'
-    o 'LPAREN Query RPAREN',                              -> $2
+    o 'LPAREN Query RPAREN',                               -> $2
   ]
   
   Where: [
@@ -56,9 +82,10 @@ grammar =
   ]
   
   Expression: [
+    o 'NOT Expression',                                     -> ':not(' + $2 + ')'
     o 'Expression Logic Expression',                        -> $1 + $2 + $3
     o 'IDENTIFIER AttributeCompare',                        -> new AttrOper($1, $2).compile()
-    o 'ROWNUM RownumCompare',                               -> new NumOper($1, $2).compile()
+    o 'ROWNUM RownumCompare',                               -> new NumOper($2).compile()
   ]
   
   Logic: [
@@ -74,11 +101,11 @@ grammar =
   ]
   
   RownumCompare: [
-    o 'EQ Number',                                          -> [$1, $2]
-    o 'LT Number',                                          -> [$1, $2]
-    o 'GT Number',                                          -> [$1, $2]
+    o 'EQ NUMBER',                                          -> [$1, $2]
+    o 'LT NUMBER',                                          -> [$1, $2]
+    o 'GT NUMBER',                                          -> [$1, $2]
     o 'IN Values',                                          -> [$1, $2]
-    o 'BETWEEN Number AND Number',                           -> [$1, $2, $4]
+    o 'BETWEEN NUMBER AND NUMBER',                          -> [$1, $2, $4]
   ]
   
   Values: [
