@@ -23,9 +23,8 @@ grammar =
     o 'SelectQuery'
     o 'UpdateQuery'
     o 'DeleteQuery'
-    # o 'InsertQuery'
-    # o 'CreateQuery'
-    # o 'DropQuery'
+    o 'CreateQuery'
+    o 'InsertQuery'
   ]
   
   SelectQuery: [
@@ -43,6 +42,19 @@ grammar =
     o 'Delete Where',                         -> $1.where = $2; $1
   ]
   
+  CreateQuery: [
+    o 'CREATE ELEMENT IDENTIFIER LPAREN Attributes RPAREN', -> new Create $3, $5
+  ]
+  
+  InsertQuery: [
+    o 'INSERT INTO Table VALUES LPAREN Queries RPAREN',  ->  new Insert $3, $6
+  ]
+  
+  Queries: [
+    o 'Query', -> [$1]
+    o 'Queries COMMA Query', -> $1.push($3); $1
+  ]
+
   Select: [
     o 'SELECT Fields FROM Table',                          -> new Select $2, $4, false
     o 'SELECT Fields FROM Table DOT ALL',                  -> new Select $2, $4, true
@@ -121,6 +133,15 @@ grammar =
   Values: [
     o 'Value',                                             -> [$1]
     o 'Values COMMA Value',                                -> $1.concat $3
+  ]
+  
+  Attributes: [
+    o 'Attribute',                     -> [$1]
+    o 'Attributes COMMA Attribute',     -> $1.push($3); $1
+  ]
+  
+  Attribute: [
+    o 'IDENTIFIER Value',            -> [$1, $2]
   ]
   
   Value: [

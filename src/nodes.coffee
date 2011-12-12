@@ -35,7 +35,32 @@ nodes.Delete = class Delete extends Select
   eval: ->
     res = super()
     elem.parentElement.removeChild elem for elem in res
+
+nodes.Create = class Create
+  constructor: (@tag, @attrs) ->
+    console.log arguments
+  eval: ->
+    elem = document.createElement @tag
+    for attr in @attrs
+      if attr[0] in ['innerHTML', 'html']
+        elem.innerHTML = attr[1]
+      else
+        elem.setAttribute attr[0], attr[1] 
+    return [elem]
+
+nodes.Insert = class Insert
+  constructor: (@target, @sources) ->
     
+  eval: ->
+    targets = @target.eval()
+    sources = (query.eval() for query in @sources)
+    console.log @sources
+    for elem in targets
+      for source in sources
+        console.log source
+        for child in source
+          elem.appendChild child
+  
 nodes.Where = class Where
   constructor: (@expression) ->
 
