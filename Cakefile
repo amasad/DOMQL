@@ -36,4 +36,4 @@ task 'build', 'build', ->
     ast = pro.ast_mangle(ast)
     ast = pro.ast_squeeze(ast)
     final_code = pro.gen_code(ast)
-    fs.writeFileSync 'built.js', final_code
+    fs.writeFileSync 'domql.min.js', final_code
