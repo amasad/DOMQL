@@ -42,6 +42,7 @@ setAttributes = (elem, attrs) ->
       elem.innerHTML = attr[1]
     else if attr[0] in ['innerText', 'text']
       elem.innerText = attr[1]
+      elem.textContent = attr[1]
     else
       elem.setAttribute attr[0], attr[1]
 
@@ -57,7 +58,9 @@ nodes.Update = class Update
 nodes.Delete = class Delete extends Select
   eval: ->
     res = super()
-    elem.parentElement.removeChild elem for elem in res
+    for elem in res
+      parent = elem.parentElement || elem.parentNode
+      parent.removeChild elem 
 
 nodes.Create = class Create
   constructor: (@tag, @attrs) ->
@@ -84,7 +87,9 @@ nodes.Drop = class Drop
     
   eval: ->
     target = evalQuery @target
-    elem.parentElement.removeChild elem for elem in target
+    for elem in target
+      parent = elem.parentElement || elem.parentNode
+      parent.removeChild elem
     
 nodes.Where = class Where
   constructor: (@expression) ->
@@ -126,6 +131,6 @@ nodes.Function = class Function extends Array
     switch @fnName
       when 'COUNT' then res.length
       when 'VAL' then res[0].value
-      when 'TEXT' then res[0].innerText
+      when 'TEXT' then res[0].innerText or res[0].textContent
         
       
