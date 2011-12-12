@@ -19,7 +19,7 @@ task 'dev', 'bebs', ->
     console.log output
     app = express.createServer()
     app.listen 8080
-    b = browserify './src/dql.coffee',
+    b = browserify 'src/test.coffee',
       watch: {interval: -1}
       ignore: ['file', 'system']
     app.use b

@@ -5,17 +5,34 @@
     <script src="browserify.js"></script>
   </head>
   <body>
-    <div id="header" class="shit"></div>
-    <div id="container">
-      <ul>
-        <li>fak</li>
-        <li>shit</li>
-      </ul>
-      <span>span</span>
+    <ul>
+      <li>zero</li>
+      <li>one</li>
+      <li>two</li>
+      <li>three</li>
+      <li>four</li>
+      <li>five</li>
+    </ul>
+    <span>span</span>
+    <div id="id-div" class="all"></div>
+    <div class="all"></div>
+    <div class="all" id="not-me"></div>
+    <div id="parent-div">
+      <div id="child-div">
+        <div id="inner-child-div"></div>
+      </div>
     </div>
-    <div id="footer" class="shit"></div>
-    <script>
-      console.log(DQL("SELECT SCRIPT,DIV FROM (SELECT * FROM BODY) WHERE CLASS='shit' AND ID <> 'header'"));
-    </script>
+    <h1 id="change-me"></h1>
+    <h2 id="change-my-id" class="change-my-class"></h2>
+    <h3 class="change-us"></h3>
+    <h3 class="change-us"></h3>
+    <ol>
+      <li>zero</li>
+      <li>one</li>
+      <li>two</li>
+      <li>three</li>
+      <li>four</li>
+      <li>five</li>
+    </ol>
   </body>
 </html>
