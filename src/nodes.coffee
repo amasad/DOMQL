@@ -36,15 +36,22 @@ nodes.Select = class Select
     return @fields.exec res if @fields instanceof nodes.Function
     res
 
+setAttributes = (elem, attrs) ->
+  for attr in attrs
+    if attr[0] in ['innerHTML', 'html']
+      elem.innerHTML = attr[1]
+    else if attr[0] in ['innerText', 'text']
+      elem.innerText = attr[1]
+    else
+      elem.setAttribute attr[0], attr[1]
+
 nodes.Update = class Update
   constructor: (@source, @settings) ->
   
   eval: ->
     res = evalQuery @source
     res = @where.eval res if @where?
-    for elem in res
-      for setting in @settings
-        elem.setAttribute setting[0], setting[1]
+    setAttributes elem, @settings for elem in res
     return res
 
 nodes.Delete = class Delete extends Select
@@ -57,11 +64,7 @@ nodes.Create = class Create
   
   eval: ->
     elem = document.createElement @tag
-    for attr in @attrs
-      if attr[0] in ['innerHTML', 'html']
-        elem.innerHTML = attr[1]
-      else
-        elem.setAttribute attr[0], attr[1] 
+    setAttributes elem, @attrs
     return [elem]
 
 nodes.Insert = class Insert
