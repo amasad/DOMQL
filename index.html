@@ -156,7 +156,7 @@
                   </p>
 
                   <h3>DQL Injection</h3>
-                  <p>
+                  <p class="lead">
                   I tried my best to bring the stuff you most adore from SQL and I thought that Injections are a must have to make you <span class="trademark">Feel Right At Home&#8482;</span>.<br/>
                   Features added/removed to make injections possible:</p>
                   <ol>
@@ -165,7 +165,7 @@
                     <li>Nothing is sanitized.</li>
                   </ol>
                 </div>
-                <code>DOMQL("SELECT * FROM BODY WHERE CLASS='%s' AND ROWNUM > 2", <input class="large" type="text" value='&#39;DROP BODY;-- pwned! \o/'/><button class="btn danger">Run!</button>)</code>
+                <code>DOMQL("SELECT * FROM BODY WHERE CLASS='%s' AND ROWNUM > 2", <input class="large" type="text" value='&#39;;DROP BODY;-- pwned! \o/'/><button class="btn danger">Run!</button>)</code>
               </section>
               
               <section id="todo">
