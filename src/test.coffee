@@ -55,10 +55,15 @@ tests =
     'SELECT DIV FROM BODY WHERE CLASS = \'all\'': 'body > div.all'
     'SELECT DIV FROM BODY WHERE CLASS = \'all\' AND ID = \'id-div\'': 'body > div.all#id-div'
     'SELECT DIV FROM BODY WHERE CLASS = \'all\' AND NOT ID = \'not-me\'': 'body > div.all:not(#not-me)'
+    'SELECT DIV FROM BODY WHERE ID LIKE \'like\'': 'body > div[class*=like]'
     'SELECT DIV FROM BODY.ALL': 'body div'
     'SELECT * FROM (SELECT DIV FROM BODY).ALL': 'body > div *'
+    'SELECT LI FROM (SELECT UL FROM BODY) WHERE ROWNUM < 5 AND ROWNUM > 0': 'body > ul > li:lt(5):gt(0)'
+    'SELECT LI FROM (SELECT UL FROM BODY) WHERE ROWNUM BETWEEN 0 AND 5': 'body > ul > li:lt(5):gt(0)'
+    'SELECT LI FROM (SELECT UL FROM BODY) WHERE ROWNUM IN (1,2,4)': 'body > ul > li:eq(1),body > ul > li:eq(2),body > ul > li:eq(4)'
     'SELECT COUNT(*) from BODY': (res)-> Sizzle('body > *').length
     'SELECT COUNT(*) from BODY.ALL': (res) -> Sizzle('body *').length
+
   
   UPDATE:
     'UPDATE (SELECT H1 FROM BODY) SET ID = \'changed-id\'': (res) ->
@@ -73,16 +78,18 @@ tests =
       siz = Sizzle 'body > h3.changed-us'
       assert.collectionEqual res, siz
       assert.ok siz.length
-    'UPDATE (SELECT LI FROM (SELECT OL FROM BODY)) SET CLASS=\'conditional-change\'': (res) ->
-      siz = Sizzle 'body > ol > li.conditional-change'
+    'UPDATE (SELECT LI FROM (SELECT OL FROM BODY)) SET CLASS=\'conditional-change\' WHERE TITLE IN (\'a\', \'b\', \'c\')': (res) ->
+      siz = Sizzle 'body > ol > li[title="a"],body > ol > li[title="b"],body > ol > li[title="c"]'
       assert.collectionEqual res, siz
+      for elem in res
+        assert.strictEqual elem.getAttribute('class'), 'conditional-change'
       assert.ok siz.length
 helper =
   start: (type) ->
-    console.log 'Testing %s', type
+    console.log '\nTesting %s', type
     @passed = Object.keys(tests[type]).length
   end: (type) ->
-    console.log '%s testing passed %d/%d', type, @passed, Object.keys(tests[type]).length
+    console.log '\n--->%s testing passed %d/%d<---', type, @passed, Object.keys(tests[type]).length
     console.log ('*' for _ in [0...100]).join ''
   catcher: (e, query) ->
     @passed--
@@ -94,6 +101,7 @@ helper =
 DQL.ready ->
   helper.start 'SELECT'
   for query, selector of tests.SELECT
+    console.log ' '
     try
       if typeof selector is 'string'
         assert.collectionEqual DQL(query), Sizzle selector
@@ -106,11 +114,12 @@ DQL.ready ->
   helper.end 'SELECT'
   
   
-  console.log 'Testing UPDATE'
+  helper.start 'UPDATE'
   for query, fn of tests.UPDATE
+    console.log ' '
     try
       fn DQL query
       console.log 'Test Passed: %s', query
     catch e
       helper.catcher e, query
-  
+  helper.end 'UPDATE'

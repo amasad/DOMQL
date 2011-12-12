@@ -60,7 +60,7 @@ grammar =
   ]
   
   Update: [
-    o 'UPDATE Table SET Settings',                         -> new Update $2, $4
+    o 'UPDATE Table SET Settings',                          -> new Update $2, $4
   ]
   
   Settings: [
@@ -78,14 +78,14 @@ grammar =
   ]
   
   Where: [
-    o 'WHERE Expression',                                  -> new Where $2
+    o 'WHERE Expression',                                 -> new Where $2
   ]
   
   Expression: [
-    o 'NOT Expression',                                     -> ':not(' + $2 + ')'
-    o 'Expression Logic Expression',                        -> $1 + $2 + $3
-    o 'IDENTIFIER AttributeCompare',                        -> new AttrOper($1, $2).compile()
-    o 'ROWNUM RownumCompare',                               -> new NumOper($2).compile()
+    o 'NOT Expression',                                    -> ':not(' + $2 + ')'
+    o 'Expression Logic Expression',                       -> $1 + $2 + $3
+    o 'IDENTIFIER AttributeCompare',                       -> new AttrOper($1, $2).compile()
+    o 'ROWNUM RownumCompare',                              -> new NumOper($2).compile()
   ]
   
   Logic: [
@@ -97,14 +97,14 @@ grammar =
     o 'EQ Value',                                          -> [$1, $2]
     o 'LT GT Value',                                       -> [$1 + $2, $3]
     o 'LIKE Value',                                        -> [$1, $2]
-    o 'IN Values',                                         -> [$1, $2]
+    o 'IN LPAREN Values RPAREN',                           -> [$1, $3]
   ]
   
   RownumCompare: [
     o 'EQ NUMBER',                                          -> [$1, $2]
     o 'LT NUMBER',                                          -> [$1, $2]
     o 'GT NUMBER',                                          -> [$1, $2]
-    o 'IN Values',                                          -> [$1, $2]
+    o 'IN LPAREN Values RPAREN',                            -> [$1, $3]
     o 'BETWEEN NUMBER AND NUMBER',                          -> [$1, $2, $4]
   ]
   

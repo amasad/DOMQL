@@ -44,7 +44,7 @@ nodes.AttrOper = class AttrOper
     switch @oper
       when '=' then "[#{@op1}=#{@op2}]"
       when '<>' then "[#{@op1}!=#{@op2}]"
-      when 'LIKE' then "[#{op1}*=#{@op2}]"
+      when 'LIKE' then "[#{@op1}*=#{@op2}]"
       when 'IN'
         ("[#{@op1}=#{op}]" for op in @op2).join ','
       
