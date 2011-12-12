@@ -42,7 +42,35 @@ assert =
     check expected, actual
   
 require './dql'
+###
+#DQL:
+Lately we've learnt that web development is a basic human right. And it should be accessable to every developer in the industry. CoffeeScript did its part by bringing web development closer to rubyists and pythonistas, dart to java devs, clojurescript to lispers ...etc. But what about DBAs aren't they equally human? Should they be doomed to suffer learning all about JS, DOM and/or jQuery?
+DQL is here to make web development fimiliar to DBAs looking for a change in career (or suffering a brain-damage). With a goal of making them Feel Right At Home (TM).
+DQL is not a fully-fleged programming language but a small DSL inspired by SQL aimed at easing DOM manipulation for DBAs.
 
+Quick examples to make you feel warm and fuzzy (Right At Home (TM)):
+  SELECT DIV FROM BODY WHERE ID='container'
+  UPDATE (SELECT H1 FROM (SELECT DIV FROM BODY).ALL) SET CLASS='active' WHERE CLASS='disabled'
+  DELETE A FROM BODY.ALL WHERE HREF LIKE "google.com" AND ROWNUM BETWEEN 5 AND 10
+
+# Right At Home (TM):
+## Speed:
+Just as in transactional DBMS you can write queries that are insanely slow.
+
+## DQL INJECTION:
+I tried my best to bring the stuff you mostly adore from SQL and I thought that Injections is a must have to make you Feel Right At Home (tm).
+Features added/removed to make injections possible:
+ 1- Insert `--` anywhere in the code to comment out the rest of the query.
+ 2- Stacking queries. You can terminate any query with `;` and start a new one.
+ 3- Nothing is sanitized.
+
+SELECT * FROM BODY WHERE CLASS='%s' AND ROWNUM > 2, [';DROP BODY;-- pwned! \o/ ] 
+
+
+TODO:
+  Submit a W3C proposal to make DQL native in all browsers.
+
+###
 tests =
   SELECT: 
     'SELECT * FROM BODY': 'body > *'
@@ -84,6 +112,22 @@ tests =
       for elem in res
         assert.strictEqual elem.getAttribute('class'), 'conditional-change'
       assert.ok siz.length
+  
+  DELETE:
+    'DELETE A FROM BODY WHERE HREF=\'delete-me\'': (res) ->
+      siz = Sizzle 'body > a[href=\'delete-me\']'
+      assert.ok !siz.length
+    
+    'DELETE LI FROM BODY.ALL WHERE ROWNUM BETWEEN 2 AND 5': (res) ->
+      siz = Sizzle 'body > ul > li'
+      assert.strictEqual siz.length, 4
+    
+    'DELETE DIV FROM (SELECT DIV FROM (SELECT DIV FROM BODY WHERE ID=\'parent-div\'))': (res) ->
+      siz = Sizzle '#inner-child-div'
+      assert.ok !siz.length
+      assert.strictEqual res[0].getAttribute('id'), 'inner-child-div'
+  
+  
 helper =
   start: (type) ->
     console.log '\nTesting %s', type
@@ -123,3 +167,14 @@ DQL.ready ->
     catch e
       helper.catcher e, query
   helper.end 'UPDATE'
+  
+  helper.start 'DELETE'
+  for query, fn of tests.DELETE
+    console.log ' '
+    try
+      fn DQL query
+      console.log 'Test Passed: %s', query
+    catch e
+      helper.catcher e,query
+  helper.end 'DELETE'
+        

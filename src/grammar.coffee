@@ -22,10 +22,10 @@ grammar =
   Query: [
     o 'SelectQuery'
     o 'UpdateQuery'
+    o 'DeleteQuery'
     # o 'InsertQuery'
     # o 'CreateQuery'
     # o 'DropQuery'
-    # o 'DeleteQuery'ssssss
   ]
   
   SelectQuery: [
@@ -38,6 +38,11 @@ grammar =
     o 'Update Where',                         -> $1.where = $2; $1
   ]
   
+  DeleteQuery: [
+    o 'Delete'
+    o 'Delete Where',                         -> $1.where = $2; $1
+  ]
+  
   Select: [
     o 'SELECT Fields FROM Table',                          -> new Select $2, $4, false
     o 'SELECT Fields FROM Table DOT ALL',                  -> new Select $2, $4, true
@@ -47,6 +52,11 @@ grammar =
   
   FunctionCall: [
     o 'FUNCTION LPAREN Fields RPAREN',                     -> new Function $1, $3
+  ]
+  
+  Delete: [
+    o 'DELETE Fields FROM Table',                          -> new Delete $2, $4, false
+    o 'DELETE Fields FROM Table DOT ALL',                  -> new Delete $2, $4, true
   ]
   
   Fields: [

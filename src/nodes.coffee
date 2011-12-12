@@ -30,6 +30,11 @@ nodes.Update = class Update
       for setting in @settings
         elem.setAttribute setting[0], setting[1]
     return res
+
+nodes.Delete = class Delete extends Select
+  eval: ->
+    res = super()
+    elem.parentElement.removeChild elem for elem in res
     
 nodes.Where = class Where
   constructor: (@expression) ->
