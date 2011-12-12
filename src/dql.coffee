@@ -85,7 +85,8 @@ DOMQL.ready ->
   DOMQL script.innerHTML for script in Sizzle('script[type="text/domql"]')
 
 DOMQL.DELETE = (elem) ->
-  elem.parentElement.removeChild elem
+  parent = elem.parentElement || elem.parentNode
+  parent.removeChild elem
 
 window.DOMQL = DOMQL
 
