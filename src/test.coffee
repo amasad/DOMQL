@@ -99,9 +99,13 @@ tests =
       assert.strictEqual res[0].getAttribute('id'), 'inner-child-div'
   
   CREATE:
-    'CREATE ELEMENT A ( ID  \'fak\' )': (res) ->
-      console.log res
-  
+    'CREATE ELEMENT A ( ID  \'my-id\', CLASS \'my-class\')': (res) ->
+      assert.strictEqual res[0].tagName, 'A'
+      assert.strictEqual res[0].getAttribute('id'), 'my-id'
+      assert.strictEqual res[0].getAttribute('class'), 'my-class'
+    'CREATE ELEMENT BR ()': (res) ->
+      assert.strictEqual res[0].tagName, 'BR'
+      
   FUNCTIONS:
     'SELECT COUNT(*) from BODY': (res) -> 
       assert.strictEqual res, Sizzle('body > *').length
