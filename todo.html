@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="domql.min.js"></script>
+    <style>
+      span {
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <script id="list-item" type="text/domql-tmpl">
+      INSERT INTO (SELECT UL FROM BODY WHERE CLASS = 'list') VALUES (
+        INSERT INTO (CREATE ELEMENT LI (
+          class 'item'
+        )) VALUES (
+          CREATE ELEMENT SPAN (
+            class 'name',
+            innerHTML '%s'
+          ),
+          CREATE ELEMENT SPAN (
+            class 'time',
+            innerHTML '%s'
+          ),
+          CREATE ELEMENT BUTTON (
+            innerHTML 'Delete',
+            onclick 'DOMQL.DELETE(this.parentElement)'
+          )
+        )
+      )
+    </script>
+    <script type="text/domql">
+      INSERT INTO BODY VALUES (
+        CREATE ELEMENT UL (
+         class 'list' 
+        )
+      );
+      INSERT INTO BODY VALUES (
+        CREATE ELEMENT LABEL (
+          innerHTML 'Description:'
+        ),
+        CREATE ELEMENT INPUT (
+          id 'input-name',
+          type 'text'
+        ),
+        CREATE ELEMENT LABEL (
+          innerHTML 'Time:'
+        ),
+        CREATE ELEMENT INPUT (
+          id 'input-time',
+          type 'text'
+        ),
+        CREATE ELEMENT INPUT (
+          type 'submit',
+          onclick 'DOMQL.tmpl("list-item", DOMQL.tmpl("get-input", "input-name"), DOMQL.tmpl("get-input", "input-time"))'
+        )
+      )
+    </script>
+    <script id="get-input" type="text/domql-tmpl">
+      SELECT VAL(INPUT) FROM BODY WHERE ID = '%s'
+    </script>
+  </body>
+</html>
