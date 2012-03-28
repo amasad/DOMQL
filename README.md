@@ -19,7 +19,7 @@ DOMQL is written using the [Jison](http://zaach.github.com/jison/) parser genera
 
     git clone git@github.com:amasad/DOMQL.git  
 
-##Dependancies
+##Dependencies
 
 * NodeJS for the development environment.
 * Browserify for Node requires to work in the browser.
