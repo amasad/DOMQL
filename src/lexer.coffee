@@ -1,42 +1,42 @@
-WORDS = 
-  COMMAND: ['SELECT', 'DELETE', 'UPDATE', 'INSERT', 'DROP', 'CREATE']
-  OPERATOR: ['FROM', 'INTO', 'WHERE', 'SET']
-  LOGIC: ['AND', 'OR', 'NOT']
-  COMPARE: ['LIKE', 'BETWEEN', 'IN']
-  KEYWORDS: ['ROWNUM', 'ELEMENT', 'VALUES']
-  POSTFIX: ['ALL']
+KEYWORDS = [
+  # Statements
+  'SELECT', 'DELETE', 'UPDATE', 'INSERT', 'DROP', 'CREATE'
+
+  # Operators
+  'FROM', 'INTO', 'WHERE', 'SET'
+
+  # Logic
+  'AND', 'OR', 'NOT'
+
+  # Compare
+  'LIKE', 'BETWEEN', 'IN'
+
+  # Keywords
+  'ROWNUM', 'ELEMENT', 'VALUES'
+
+  # Postfix operator
+  'ALL'
+]
 
 FUNCTION = ['COUNT', 'TEXT', 'VAL']
 
 SYMBOLS =
-  EQ: '='
-  GT: '>'
-  LT: '<'
-  STAR: '*'
-  DOT: '.'
-  COMMA: ','
-  LPAREN: '('
-  RPAREN: ')'
-  TERMINATOR: ';'
+  '=': 'EQ'
+  '>': 'GT'
+  '<': 'LT'
+  '*': 'STAR'
+  '.': 'DOT' 
+  ',': 'COMMA'
+  '(': 'LPAREN'
+  ')': 'RPAREN'
+  ';': 'TERMINATOR'
+
+SYMBOL_LIST = (key for key of SYMBOLS)
 
 STRING = /^'[^\\']*(?:\\.[^\\']*)*'/
 NUMBER = /^-?\d+/
 IDENTIFIER = /^[A-Za-z]\w*/
 
-listify = (obj) ->
-  isArray = Array.isArray or (arg) -> Object::toString.call(arg) is '[object Array]'
-  ret = []
-  for _, v of obj
-    if Array.isArray v then ret = ret.concat v else ret.push v
-  ret
-WORD_LIST = listify WORDS
-SYMBOL_LIST = listify SYMBOLS
-
-SYMBOL_TAGS = do ->
-  obj = {}
-  for key, value of SYMBOLS
-    obj[value] = key
-  obj
 
 exports.Lexer = class Lexer
   
@@ -77,7 +77,7 @@ exports.Lexer = class Lexer
     
     word = match[0].toUpperCase()
     # KEYWORDS:
-    if word in WORD_LIST
+    if word in KEYWORDS
       @token word, word
     else if word in FUNCTION
       @token 'FUNCTION', word
@@ -104,7 +104,7 @@ exports.Lexer = class Lexer
   charMatch: ->
     val = @chunk[0]
     if val in SYMBOL_LIST
-      @token SYMBOL_TAGS[val], val
+      @token SYMBOLS[val], val
       return 1
     else if val is '-' and @chunk[1] is '-'
       return @code.length
