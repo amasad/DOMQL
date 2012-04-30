@@ -95,7 +95,7 @@ grammar =
     o 'UPDATE Table SET Settings',                                   -> new Update $2, $4
   ]                                                                  
                                                                      
-  Settings: [                                                        
+  Settings: [
     o 'Setting',                                                     -> [$1]
     o 'Settings COMMA Setting',                                      -> $1.push($3); $1
   ]                                                                  
@@ -110,16 +110,20 @@ grammar =
   ]                                                                  
                                                                      
   Where: [                                                           
-    o 'WHERE Expression',                                            -> new Where $2
+    o 'WHERE WhereClause',                                            -> new Where $2
   ]                                                                  
                                                                      
-  Expression: [                                                      
+  WhereClause: [                                                      
+    o 'WhereClause Logic Expression',                                 -> $1 + $2 + $3
+    o 'Expression'
+  ]                                                                  
+     
+  Expression: [
     o 'NOT Expression',                                              -> ':not(' + $2 + ')'
-    o 'Expression Logic Expression',                                 -> $1 + $2 + $3
     o 'IDENTIFIER AttributeCompare',                                 -> new AttrOper($1, $2).compile()
     o 'ROWNUM RownumCompare',                                        -> new NumOper($2).compile()
-  ]                                                                  
-                                                                     
+  ] 
+
   Logic: [                                                           
     o 'AND',                                                         -> ''
     o 'OR',                                                          -> ','
