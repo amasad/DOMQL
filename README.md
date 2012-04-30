@@ -17,9 +17,9 @@ DOMQL is written using the [Jison](http://zaach.github.com/jison/) parser genera
 
 ##Getting the Code
 
-  git clone git@github.com:amasad/DOMQL.git  
+    git clone git@github.com:amasad/DOMQL.git  
 
-##Dependancies
+##Dependencies
 
 * NodeJS for the development environment.
 * Browserify for Node requires to work in the browser.
@@ -40,3 +40,8 @@ Using CoffeeScript's Cakefile you could do the following:
 
 ##Tests
 Run `cake dev` and navigate your browser to http://localhost:8080 then open your JavaScript console to see the test results.
+
+#License
+The MIT License
+Copyright 2012 Amjad Masad <amjad.masad@gmail.com>
+
