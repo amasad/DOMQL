@@ -1,4 +1,5 @@
-{Sizzle} = require './lib/sizzle'
+if typeof window isnt 'undefined'
+  {Sizzle} = require './lib/sizzle'
 
 nodes = exports
 evalQuery = (source) ->
