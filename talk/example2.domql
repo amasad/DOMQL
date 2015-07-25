@@ -1,0 +1,12 @@
+INSERT INTO (SELECT DIV FROM BODY WHERE ID='container') VALUES (
+       CREATE ELEMENT h2 (
+             innerText 'TODOS:'
+       ),
+       CREATE ELEMENT SPAN (
+              innerText 'Count: 0',
+              id 'count'
+       ),
+       CREATE ELEMENT OL (
+              class 'list'
+       )
+);

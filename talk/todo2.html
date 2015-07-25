@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../domql.min.js"></script>
+    <style>
+      body,span{
+        padding: 10px
+      }
+      input {
+        margin: 10px
+        }
+      ol {
+        border: solid 1px gray;
+        min-height:100px;
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <!-- Generate main view -->
+    <script type="text/domql">
+      INSERT INTO (SELECT DIV FROM BODY WHERE ID='container') VALUES (
+        CREATE ELEMENT h2 (
+         innerText 'TODOS:'
+        ),
+        CREATE ELEMENT SPAN (
+          innerText 'Count: 0',
+          id 'count'
+        ),
+        CREATE ELEMENT OL (
+         class 'list'
+        )
+      );
+      INSERT INTO (SELECT DIV FROM BODY WHERE ID='container') VALUES (
+        CREATE ELEMENT LABEL (
+          innerHTML 'Controls:'
+        ),
+        INSERT INTO (CREATE ELEMENT DIV(class 'controls')) VALUES (
+            CREATE ELEMENT LABEL (
+              innerHTML 'TODO:'
+            ),
+            CREATE ELEMENT INPUT (
+              id 'input-name',
+              type 'text'
+            ),
+            CREATE ELEMENT LABEL (
+              innerHTML 'Time:'
+            ),
+            CREATE ELEMENT INPUT (
+              id 'input-time',
+              type 'text'
+            ),
+            CREATE ELEMENT INPUT (
+              type 'submit',
+              value 'add',
+              onclick 'DOMQL.tmpl("add-list-item",
+                                   DOMQL.tmpl("get-input", "input-name"),
+                                   DOMQL.tmpl("get-input", "input-time")
+                                  )
+                       DOMQL.tmpl("update-count", DOMQL.tmpl("get-count"))'
+            ),
+            CREATE ELEMENT BR(),
+            CREATE ELEMENT INPUT (
+              type 'submit',
+              value 'delete all',
+              onclick 'DOMQL.tmpl("delete-all")
+                       DOMQL.tmpl("update-count", DOMQL.tmpl("get-count"))'
+            ),
+            CREATE ELEMENT BR(),
+            CREATE ELEMENT INPUT (
+              type 'submit',
+              value 'I dont need TODOS. I go through life like a boss!',
+              onclick 'DOMQL.tmpl("like-a-boss")'
+            )
+        )
+      )
+    </script>
+
+    <!-- PROCEDURES -->
+
+    <!-- Adds a todo item to the list -->
+    <script id="add-list-item" type="text/domql-tmpl">
+      INSERT INTO (SELECT OL FROM DIV WHERE CLASS = 'list') VALUES (
+        INSERT INTO (CREATE ELEMENT LI (
+          class 'item'
+        )) VALUES (
+          CREATE ELEMENT SPAN (
+            class 'name',
+            innerHTML '%s'
+          ),
+          CREATE ELEMENT SPAN (
+            class 'time',
+            innerHTML '%s'
+          ),
+          CREATE ELEMENT BUTTON (
+            innerHTML 'Delete',
+            onclick 'DOMQL.DELETE(this.parentNode)
+                     DOMQL.tmpl("update-count", DOMQL.tmpl("get-count"))'
+          )
+        )
+      )
+    </script>
+
+    <!-- Gets a value of an input element by id -->
+    <script id="get-input" type="text/domql-tmpl">
+      SELECT VAL(INPUT) FROM BODY.ALL WHERE ID = '%s'
+    </script>
+
+    <!-- Gets the todo items count -->
+    <script id="get-count" type="text/domql-tmpl">
+      SELECT COUNT(LI) FROM OL
+    </script>
+
+    <!-- Updates the todo count with an integer -->
+    <script id="update-count" type="text/domql-tmpl">
+      UPDATE (SELECT SPAN FROM BODY.ALL WHERE ID='count')
+        SET innerText = 'Count: %d'
+    </script>
+
+    <!-- Delete all todos -->
+    <script id="delete-all" type="text/domql-tmpl">
+      DELETE LI FROM OL WHERE CLASS = 'item'
+    </script>
+
+    <!-- Like a boss! -->
+    <script id="like-a-boss" type="text/domql-tmpl">
+      DROP ELEMENT DIV;
+      INSERT INTO BODY VALUES (
+        CREATE ELEMENT IMG (
+          src 'http://27.media.tumblr.com/tumblr_lrcme60gbz1qzzzy9o1_500.jpg'
+        )
+      )
+    </script>
+   <!-- END PROCEDURES -->
+
+   <!-- When the app is ready add a predefined item. -->
+    <script>
+    DOMQL.ready(function () {
+        DOMQL.tmpl("add-list-item",'Learn DOMQL', (new Date).toTimeString())
+        DOMQL.tmpl("update-count", DOMQL.tmpl("get-count"))
+    })
+    </script>
+  </body>
+</html>
